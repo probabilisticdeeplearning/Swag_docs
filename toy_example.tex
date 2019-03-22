@@ -1,0 +1,89 @@
+\section{Toy example}
+
+\subsection{Data}
+
+Despite being a toy example, the dimensionality needs to be high. Consider simulated data, with $n$ normally distributed observations with mean parameter $\bm{\theta}$ from a similarly normal prior with known variance:
+
+\begin{align}
+  &\text{Likelihood:} &&\bm{x} | \bm{\theta} \sim \mathcal{N}(\bm{x}; \bm{\theta}, \Sigma_{\bm{x}})  \nonumber \\
+  &\text{Prior:} &&\bm{\theta} \sim \mathcal{N}(\bm{\theta}; \bm{\theta}_0, \Sigma_{\bm{\theta}}),
+\end{align}
+
+where
+
+\begin{equation}
+  \mathcal{N} \left( \bm{x}; \bm{\mu}, \Sigma \right) = \frac{ \exp \left( -\frac{ 1 }{ 2 } ( \bm {x} - \bm{\mu} )^{ \mathrm {T} }{ \Sigma }^{-1} ( \bm{x} - \bm{\mu} ) \right)} { \sqrt{ ( 2\pi )^{k} | \Sigma | } }.
+\end{equation}
+
+and the corresponding negative log. likelihood:
+
+\begin{equation}
+  -\log \mathcal{N} \left( \bm{x}; \bm{\mu}, \Sigma \right) = \frac{ 1 }{ 2 } ( \bm {x} - \bm{\mu} )^{ \mathrm {T} }{ \Sigma }^{-1} ( \bm{x} - \bm{\mu} ) + \frac{k}{2} \log 2\pi  + \frac{1}{2} \log | \Sigma | .
+\end{equation}
+Under these assumptions the likelihood and prior conjugate and the posterior distribution is also normal:
+
+\begin{align}
+  \bm{\theta}|\bm{x} &\sim \mathcal{N}(\bm{\theta}; \bm{\theta}', \Sigma_{\bm{\theta}}') \nonumber,
+\end{align}
+where
+
+\begin{align}
+  \bm{\theta}' &= \left( \Sigma_{\bm{\theta}}^{-1} + n \Sigma_x^{-1}\right)^{-1} \left( \Sigma_{\bm{\theta}}^{-1} \bm{\theta}_{0} + \Sigma_x^{-1} \sum_{i=1}^{n} \bm{x}_{i} \right) \nonumber \\
+  \Sigma_{\bm{\theta}}' &=\left( \Sigma_{\bm{\theta}}^{-1} + n \Sigma_x^{-1}\right)^{-1}
+  \label{eq:posterior_update}
+\end{align}
+A sample $\{\bm{x}_1, \dots, \bm{x}_B \}$ with batch size $B$ is created by first sampling a $\theta$ from the prior and then use that $\theta$ when sampling from $ \bm{x} \sim \theta $.
+Then the true posterior will be determined by updating the prior (eq \eqref{eq:posterior_update}) after each batch and consider the last posterior as the current prior.
+
+Perhaps I should let $\Sigma_x$ be a parameter as well? But if we want a normal posterior then it needs to be known.
+
+
+
+\subsection{SGD}
+
+If we instead wish to retrieve the posterior parameters with stochastic gradient descent we construct a loss function based on the probability of the observations given a set of parameters:
+\begin{equation}
+  \mathcal{L} = n \log |\Sigma_x| + \displaystyle{\sum_{i=1}^n} (\bm{x}_i - \bm{\theta})^T \Sigma_x^{-1} (\bm{x}_i - \bm{\theta}) \propto - \log p(\{\bm{x}_1, \dots, \bm{x}_n\}| \bm{\theta}, \Sigma_x)
+\end{equation}
+Or is it better to base it on a batch updated posterior, $-\log p(\bm{\theta}| \bm{x})$? In the swag article they seem to use the posterior~\cite{swag}.
+
+Update: I am now using the posterior.
+
+\subsection{Learning}
+
+I use the posterior as my loss function, in practice I sum the negative logarithm of the likelihood and the posterior:
+
+\begin{align}
+  \mathcal{L} \propto \log p( \bm{\theta} | \bm{x} )- \displaystyle{\sum_{i=1}^n} \log p( \bm{x}_i | \bm{\theta} ) - n \log p( \bm{\theta} ) \nonumber \\ 
+\end{align}
+and use the \texttt{pytorch} implementations of the distributions to calculate the log probability. The code for algorithm \ref{alg:swag_gaussian} is in the
+\href{https://github.com/probabilisticdeeplearning/swa_gaussian/tree/toy_example}{\texttt{repo}} (branch \texttt{toy\_example})
+
+\begin{algorithm}
+  \SetKwInOut{Input}{Input}
+  \SetKwInOut{Output}{Output}
+  \SetKw{KwBy}{by}
+
+  \underline{function Euclid} $(a,b)$\;
+  \Input{$\bm{\theta}_0, \Sigma_{\bm{\theta}}, \Sigma_{\bm{x}}$}
+  \Output{$\{\bm{\hat{\theta}}\}$}
+  $\{\bm{\hat{\theta}}\} = \emptyset$\\
+  \For{epoch in $1, \dots, T$}
+  {
+    \For{batch in $1, \dots, n/B$}
+    {
+      l = 0
+      \For{i in $1, \dots, B$}
+      {
+        sample $\bm{\theta} \sim \bm{\theta} | \bm{\theta}_0$\\
+        sample $\bm{x} \sim \bm{x}_i | \bm{\theta}$\\
+        $l \to l + \mathcal{L}(\bm{x}_i, \bm{\hat{\theta}})$\\
+      }
+      $\bm{\hat{\theta}} \to sgd(\bm{\hat{\theta}})$\\
+      update\_posterior\\
+      $\{\bm{\hat{\theta}}\} \to \{\bm{\hat{\theta}}\} \cup \bm{\hat{\theta}}$
+    }
+  }
+  \caption{Swag, Normal likelihood, normal prior}
+  \label{alg:swag_gaussian}
+\end{algorithm}

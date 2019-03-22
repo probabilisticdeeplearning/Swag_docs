@@ -1,0 +1,28 @@
+\section{Goal}
+Build on the work done in swag \cite{swag} and try to find a better algorithm for sampling from the posterior distribution of model parameters $\theta$.
+
+\section{Theoretical considerations}
+\begin{itemize}
+    \item{Investigate Gaußian approximation? Is it even necessary or is the useful idea in swag that the posterior lives in subspace? Mandt et al good on this \cite{mandt}. An article on the properties of high dim loss functions seems to support the low dimensional claim \cite{visual_loss}.}
+    \item{Gaußian diagonal for sampling in the complementary space to K?}
+    \item{Better way to get rank K covariance, online PCA \cite{online_pca}?}
+    \item{Loss function vs. posterior distribution. When reasoning about this problem we think of the loss as being based on $p(\theta|x)$. But then the posterior needs to be differentiable. If we instead consider the logarithm: 
+    \begin{equation}
+        \log p(\theta | x) = \log p(x | \theta) + \log p(\theta) + C,
+    \end{equation}
+    we can shift the gradient need to the likelihood (given that we can choose a convenient prior). Is it in general straightforward to form and differentiate the likelihood and how does it relate to an ordinary loss, e.g. cross entropy? 
+    }
+\end{itemize}
+
+\section{Step-by-step}
+\begin{itemize}
+    \item{Reproduce some results from swag paper, e.g. \cite[Fig. 5]{swag}. Verifies implementation plus forces understanding of the relation post. dist. and loss.}
+    \item{Proof of concept problem? High dimensional, by necessity?}
+    \item{Implement some basic MCMC sampling on K-dim subspace; if a simple method works, easy to implement arbitrary sampling method.}
+    \begin{itemize}
+        \item MH sampling with the swag distr. as proposal function.
+        \item{Deterministic approximation \cite{determ_mcmc}}
+        \item{Combination: Gaußian for diagonal, MCMC for K-subspace.}
+    \end{itemize}
+    \item Implement online PCA.
+\end{itemize}
