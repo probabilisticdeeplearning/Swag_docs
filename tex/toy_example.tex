@@ -5,17 +5,17 @@
 Despite being a toy example, the dimensionality needs to be high. Consider simulated data, with $n$ normally distributed observations with mean parameter $\bm{\theta}$ from a similarly normal prior with known variance:
 
 \begin{align}
-  &\text{Likelihood:} &&\bm{x} | \bm{\theta} \sim \mathcal{N}(\bm{x}; \bm{\theta}, \Sigma_{\bm{x}})  \nonumber \\
+  &\text{Likelihood:} &&\{\bm{x}\}_{n=1}^N | \bm{\theta} \sim \prod_{n=1}^N f(\bm{x}; \bm{\theta}, \Sigma_{\bm{x}})  \nonumber \\
   &\text{Prior:} &&\bm{\theta} \sim \mathcal{N}(\bm{\theta}; \bm{\theta}_0, \Sigma_{\bm{\theta}}),
 \end{align}
 
 where
 
 \begin{equation}
-  \mathcal{N} \left( \bm{x}; \bm{\mu}, \Sigma \right) = \frac{ \exp \left( -\frac{ 1 }{ 2 } ( \bm {x} - \bm{\mu} )^{ \mathrm {T} }{ \Sigma }^{-1} ( \bm{x} - \bm{\mu} ) \right)} { \sqrt{ ( 2\pi )^{k} | \Sigma | } }.
+  f \left( \bm{x}; \bm{\mu}, \Sigma \right) = \frac{ \exp \left( -\frac{ 1 }{ 2 } ( \bm {x} - \bm{\mu} )^{ \mathrm {T} }{ \Sigma }^{-1} ( \bm{x} - \bm{\mu} ) \right)} { \sqrt{ ( 2\pi )^{k} | \Sigma | } }.
 \end{equation}
 
-and the corresponding negative log. likelihood:
+is a normal pdf and the corresponding negative log.\ likelihood:
 
 \begin{equation}
   -\log \mathcal{N} \left( \bm{x}; \bm{\mu}, \Sigma \right) = \frac{ 1 }{ 2 } ( \bm {x} - \bm{\mu} )^{ \mathrm {T} }{ \Sigma }^{-1} ( \bm{x} - \bm{\mu} ) + \frac{k}{2} \log 2\pi  + \frac{1}{2} \log | \Sigma | .
@@ -37,8 +37,6 @@ Then the true posterior will be determined by updating the prior (eq \eqref{eq:p
 
 Perhaps I should let $\Sigma_x$ be a parameter as well? But if we want a normal posterior then it needs to be known.
 
-
-
 \subsection{SGD}
 
 If we instead wish to retrieve the posterior parameters with stochastic gradient descent we construct a loss function based on the probability of the observations given a set of parameters:
@@ -51,10 +49,10 @@ Update: I am now using the posterior.
 
 \subsection{Learning}
 
-I use the posterior as my loss function, in practice I sum the negative logarithm of the likelihood and the posterior:
+I base my loss function on the posterior. In practice I sum the negative logarithm of the likelihood and the posterior:
 
 \begin{align}
-  \mathcal{L} \propto \log p( \bm{\theta} | \bm{x} )- \displaystyle{\sum_{i=1}^n} \log p( \bm{x}_i | \bm{\theta} ) - n \log p( \bm{\theta} ) \nonumber \\ 
+  \mathcal{L} = \left( \displaystyle{\sum_{i=1}^n} \log p( \bm{x}_i | \bm{\theta} ) \right) - \log p( \bm{\theta} ) \propto \log p( \bm{\theta} | \bm{x} )  \nonumber \\ 
 \end{align}
 and use the \texttt{pytorch} implementations of the distributions to calculate the log probability. The code for algorithm \ref{alg:swag_gaussian} is in the
 \href{https://github.com/probabilisticdeeplearning/swa_gaussian/tree/toy_example}{\texttt{repo}} (branch \texttt{toy\_example})
@@ -79,10 +77,10 @@ and use the \texttt{pytorch} implementations of the distributions to calculate t
         $l \to l + \mathcal{L}(\bm{x}_i, \bm{\hat{\theta}})$\\
       }
       $\bm{\hat{\theta}} \to sgd(\bm{\hat{\theta}})$\\
-      update\_posterior\\
       $\{\bm{\hat{\theta}}\} \to \{\bm{\hat{\theta}}\} \cup \bm{\hat{\theta}}$
     }
   }
-  \caption{Swag, Normal likelihood, normal prior}
-  \label{alg:swag_gaussian}
+  \caption{Swag, Normal likelihood, normal prior}\label{alg:swag_gaussian}
 \end{algorithm}
+
+\input{tex/results.tex}
