@@ -1,7 +1,9 @@
 \section{Results}
 
 The toy model seems to indicate that the samples tend to be widely spread along directions where variance is large.
-Makes sense with the gradients, does it not?
+Does this make sense in terms of the gradients?
+Consider a 1D normal distribution with quite small variance for the sample $x| \theta$.
+If we sample $x$ far from the current mean estimate $\theta$, then due the small variance would result in large gradients, causing the result seen in fig \ref{fig:1d_low_var}. There should however be a mitigating effect due to the fact that we are unlikely to sample these far-away $x$'s and so giving smaller gradients. Experimentally this mitigation seems non-existent or inefficient, or it is something wrong with my implementation.  
 
 \begin{figure}
   \input{fig/1d_low_var.tex}
@@ -13,10 +15,10 @@ Makes sense with the gradients, does it not?
   \caption{1D, $\sigma^2 = 10$}\label{fig:1d_high_var}
 \end{figure}
 
-\begin{figure}
-  \includegraphics[width=\linewidth]{fig/spherical_cov.png}
-  \caption{Bivariate, spherical cov}\label{fig:spherical_cov}
-\end{figure}
+% \begin{figure}
+%   \includegraphics[width=\linewidth]{fig/spherical_cov.png}
+%   \caption{Bivariate, spherical cov}\label{fig:spherical_cov}
+% \end{figure}
 
 
 \begin{figure}
