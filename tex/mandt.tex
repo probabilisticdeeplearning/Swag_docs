@@ -1,0 +1,58 @@
+\newcommand\batchSize{B}
+\newcommand\sqrtC{C^{1/2}}
+\newcommand\loss{\mathcal{L}}
+\newcommand\lr{\eta}
+
+
+\section{Mandt - Continuous}
+
+\begin{align}
+  \loss(\theta) &= \frac{1}{N} \sum_{n=1}^N l_n(\theta) \nonumber \\
+  l_n(\theta) &= - \log p(x_n | \theta) - \frac{1}{N} \log p(\theta) \nonumber \\
+  g(\theta) &= \nabla_{\theta} \loss(\theta)
+  \label{eq:loss}
+\end{align}
+
+\begin{align}
+  \hat{g}_S &\approx g(\theta) + \frac{1}{\sqrt{\batchSize}} \Delta g(\theta),\ \Delta g(\theta) \sim N(0, C(\theta)) \nonumber \\
+  C(\theta) &\approx C = B B^T
+  \label{eq:grad_noise}
+\end{align}
+
+\begin{align}
+  \theta(t + 1) = \theta(t) - \lr \hat{g}_S( \theta(t) )
+  \label{eq:sgd_step}
+\end{align}
+
+Eq's \eqref{eq:grad_noise}, \eqref{eq:sgd_step} gives the process:
+
+\begin{align}
+  \Delta \theta(t) = - \lr g( \theta(t) ) + \frac{\lr}{\batchSize} \sqrtC \Delta W,\ \Delta W \sim \mathcal{N}(0, I)
+  \label{eq:sgd_step}
+\end{align}
+
+\begin{align}
+  d \theta(t) = - \lr g( \theta )dt + \frac{\lr}{\batchSize} \sqrtC  dW(t)
+  \label{eq:continuous:sgd_step}
+\end{align}
+
+\section{Linear}
+
+\begin{align}
+  \theta &\in \mathbb{R}^d \nonumber \\
+  x_n &\in \mathbb{R}^d \nonumber \\
+  y_n &\in \mathbb{R} \nonumber \\
+  X &= (x_1, \dots, x_N)\in \mathbb{R}^{d \times N} \nonumber \\
+  Y &= (y_1, \dots, y_N)^T \in \mathbb{R}^{N} \nonumber \\
+\end{align}
+
+\begin{align}
+  \loss(\theta) &= \frac{1}{2} \sum_{n=1}^N  \| x_n^T \theta - y_n \|^2 = \frac{1}{2} \| X^T \theta - Y \|^2 \nonumber \\
+  g(\theta) &= X (X^T \theta - Y)
+  \label{eq:linear_loss}
+\end{align}
+
+\begin{align}
+  \Delta \theta(t) = - \lr X (X^T \theta - Y) + \frac{\lr}{\batchSize} \sqrtC \Delta W
+  \label{eq:sgd_step}
+\end{align}
