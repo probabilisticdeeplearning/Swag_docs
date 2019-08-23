@@ -6,11 +6,13 @@ Consider a 1D normal distribution with quite small variance for the sample $x| \
 If we sample $x$ far from the current mean estimate $\theta$, then due the small variance would result in large gradients, causing the result seen in fig \ref{fig:1d_low_var}. There should however be a mitigating effect due to the fact that we are unlikely to sample these far-away $x$'s and so giving smaller gradients. Experimentally this mitigation seems non-existent or inefficient, or it is something wrong with my implementation.  
 
 \begin{figure}
+\centering
   \input{fig/1d_low_var.tex}
   \caption{1D, $\sigma^2 = 1/4$}\label{fig:1d_low_var}
 \end{figure}
 
 \begin{figure}
+\centering
   \input{fig/1d_high_var.tex}
   \caption{1D, $\sigma^2 = 10$}\label{fig:1d_high_var}
 \end{figure}
@@ -22,6 +24,7 @@ If we sample $x$ far from the current mean estimate $\theta$, then due the small
 
 
 \begin{figure}
+\centering
   \includegraphics[width=\linewidth]{fig/mirrored_cov_1.png}
   \caption{Bivariate, correlated}\label{fig:mirrored_cov_1}
 \end{figure}
