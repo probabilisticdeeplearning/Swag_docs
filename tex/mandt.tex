@@ -2,6 +2,10 @@
 \newcommand\sqrtC{C^{1/2}}
 \newcommand\loss{\mathcal{L}}
 \newcommand\lr{\eta}
+\newcommand\yBar{\overline{y}}
+\newcommand\yBarB{\overline{y}_{\mathcal{B}}}
+\newcommand\yBarNotB{\overline{y}_{\mathcal{N} \setminus \mathcal{B}}}
+
 
 
 \section{Mandt - Continuous}
@@ -54,5 +58,60 @@ Eq's \eqref{eq:grad_noise}, \eqref{eq:sgd_step} gives the process:
 
 \begin{align}
   \Delta \theta(t) = - \lr X (X^T \theta - Y) + \frac{\lr}{\batchSize} \sqrtC \Delta W
-  \label{eq:sgd_step}
+  \label{eq:sgd_diff}
+\end{align}
+
+How to relate it to the posterior?
+
+\section{Scalar}
+
+Notation:
+\begin{align}
+  \mathcal{N} = \{1, \dots, N\} \nonumber \\
+  \mathcal{B} \subset \mathcal{N},\ |\mathcal{B}| = B
+\end{align}
+
+\begin{align}
+  \theta &\in \mathbb{R} \nonumber \\
+  x_n &\in \mathbb{R} \nonumber \\
+  y_n &\in \mathbb{R} \nonumber \\
+\end{align}
+
+\begin{align}
+  \loss(\theta) &= \frac{1}{2N} \sum_{n \in \mathcal{N}} (\theta - y_n)^2 \nonumber \\
+  \Rightarrow g_n(\theta) &= \theta - y_n \nonumber \\
+  \Rightarrow \hat{g}_B(\theta) &= \theta - \yBar \nonumber \\
+  \label{eq:linear_loss}
+\end{align}
+
+\begin{align}
+  \theta_{k+1} = \theta_k - \lr (\theta_k - \yBarB) = (1- \lr) \theta_k + \lr \yBarB
+  \label{eq:sgd_step_scalar}
+\end{align}
+
+\subsection{$p(\yBarB | \yBar )$}
+
+\begin{equation}
+  \yBar = \frac{B}{N} \yBarB + \frac{N-B}{N} \yBarNotB
+\end{equation}
+
+Known:
+
+\begin{align}
+  p(\yBarB, \yBarNotB | \theta ) &= p(\yBarB | \theta) p(\yBarNotB | \theta ) \nonumber \\
+  p(\yBarB | \theta) &= \mathcal{N}(\yBarB; \theta, \sigma_B) \nonumber \\
+  p(\yBarNotB | \theta) &= \mathcal{N}(\yBarNotB; \theta, \sigma_{N-B}) \nonumber \\
+\end{align}
+Sought:
+
+\begin{align}
+  p(\yBarB | \theta, \yBar ) &= \frac{p(\yBar, \yBarB | \theta)}{p(\yBar | \theta)}\nonumber \\
+                             &= \frac{p(\yBar | \yBarB, \theta) p(\yBarB | \theta) }{p(\yBar | \theta)} \nonumber \\
+  \label{eq:pyb_y}
+\end{align}
+Need:
+
+\begin{align}
+  p(\yBar | \yBarB, \theta) "="
+  \label{eq:py_yb_theta}
 \end{align}
