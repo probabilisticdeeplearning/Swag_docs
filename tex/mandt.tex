@@ -102,6 +102,8 @@ Known:
   p(\yBarB | \theta) &= \mathcal{N}(\yBarB; \theta, \sigma_B) \nonumber \\
   p(\yBarNotB | \theta) &= \mathcal{N}(\yBarNotB; \theta, \sigma_{N-B}) \nonumber \\
 \end{align}
+Note, is the first one really independent?
+
 Sought:
 
 \begin{align}
@@ -112,6 +114,20 @@ Sought:
 Need:
 
 \begin{align}
-  p(\yBar | \yBarB, \theta) "="
+  p(\yBar | \yBarB, \theta) "=" p(\yBarNotB
+  = f(\yBarB, \yBar)| \theta)
+  = p_{\yBarNotB| \theta} (f(\yBarB, \yBar)| \theta),
   \label{eq:py_yb_theta}
 \end{align}
+where,
+\begin{equation}
+  \yBarNotB = \frac{N}{N-B}(\yBar - \frac{B}{N} \yBarB).
+\end{equation}
+
+Since we condition on $\yBarB$ we know a deterministic transformation from $\yBar$ to $\yBarNotB$.
+Which essentialy gives us a distribution over a shifted variable.
+
+Written out with actual normal distributions, the limits converge to what we expect
+
+TODO: transfer hand written notes
+
